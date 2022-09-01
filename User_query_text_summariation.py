@@ -24,13 +24,11 @@ import pickle
 import re
 
 nltk.download('punkt')
-
 """# Step1 :- Asking User Query"""
-
-# remove articles from economictimes, wikipedia.com, trendlyne.com, indiainfoline.com
-# Only latest blogs should appear in the list. Check how old the link is.
-
-# to search
+'''remove articles from economictimes, wikipedia.com, trendlyne.com, indiainfoline.com, economictimes, livemint, https://www.youtube.com,
+   rottentomatoes, encrypted, financialexpress '''
+'''# Only latest blogs should appear in the list. Check how old the link is.'''
+'''# to search'''
 query = "India plans to ban chinese phones under Rs.12000"
 queries = []
 for j in search(query, tld="co.in", stop= 10, pause=2):
@@ -45,8 +43,8 @@ for i in articles_to_remove_with_words:
       queries.remove(j)
 queries
 
-"""## Step1.1 :- Extracting just text and deleting all the tags and links"""
 
+"""## Step1.1 :- Extracting just text and deleting all the tags and links"""
 response = requests.get(queries[0])
 print(response.status_code)
 
@@ -79,52 +77,23 @@ p_text = p_text.lower()
 p_text = re.sub('\d{2}(:)\d{2}\s(ist)', '', p_text)
 page_contents = p_text
 
-# # Page content from Website URL
-# response = requests.get(queries[0])
-# print(response.status_code)
-
-# page_contents = response.text
-# print('length of page contents is :', len(page_contents))
-# soup = BeautifulSoup(page_contents, "html.parser")
-# title_data = soup.title.text
-  
-# # Function to remove tags
-# def remove_tags(html):
-#     soup = BeautifulSoup(html, "html.parser")
-    
-#     for a in soup.findAll('a', href=True):
-#       a.extract()
-#     # This for loop will remove all the tags and print only the text
-#     for data in soup(['style', 'script']):
-#         data.decompose()
-     
-              
-#     return ' '.join(soup.stripped_strings)
-  
-  
-# # Print the extracted data
-# print(title_data)
-# page_contents = remove_tags(page_contents)
 
 title_data = title_data.split('|', 1)[0]
 title_data = title_data.split('-', 1)[0]
-title_data
+print(title_data)
 
 if title_data in page_contents:
   page_contents = page_contents.replace(title_data, '')
+print(page_contents)
 
-page_contents
 
-"""# Step2 :- Cleaning
-
+# Step2 :- Cleaning
 ## Step2.1 :- Lowering the case
-"""
-
 page_contents = page_contents.lower()
-page_contents
+print(page_contents)
 
-"""## Step2.2 :- cleaning unwanted texts"""
 
+## Step2.2 :- cleaning unwanted texts
 if 'watch right now' in page_contents:
   page_contents = page_contents.replace('watch right now', '')
 if 'download app copyright © 2022 living media india limited. for reprint rights' in page_contents:
@@ -185,7 +154,6 @@ if "last updated at" in page_contents:
   page_contents = page_contents.replace("last updated at", '')
     
 
-# sentence = 'remove the dates like updated on mar 30 2022 mar 30th, 2013  Mar 30th 2013  mar 30, 2022 published on August 20th 2022  August 20, 2022  August 20th, 2022'
 # mar 30, 2022
 if 'updated on' in page_contents:
   page_contents = re.sub('(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s\d{2}(,)\s\d{4}', ' ', page_contents)
@@ -198,8 +166,6 @@ if 'updated on' in page_contents:
 # mar 30 2022
 if 'updated on' in page_contents:
   page_contents = re.sub('(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s\d{2}\s\d{4}', ' ', page_contents)
-
-
 
 # march 30th, 2022
 if 'updated on' in page_contents:
@@ -244,7 +210,6 @@ if ' ani ' in page_contents:
 if 'log into your account your useame your password password recovery recover your password your email a password will be e-mailed to you' in page_contents:
   page_contents = page_contents.replace('log into your account your useame your password password recovery recover your password your email a password will be e-mailed to you', '')
 
-page_contents
 
 page_contents = re.sub('(january|february|march|april|may|june|july|august|september|october|november|december)\s\d{2}(,)\s\d{4}', ' ', page_contents)
 page_contents = re.sub('(january|february|march|april|may|june|july|august|september|october|november|december)\s\d{2}\s\d{4}', ' ', page_contents)
@@ -255,11 +220,10 @@ page_contents = re.sub('(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s\d{2}
 page_contents = re.sub('(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s\d{2}(th|st|rd|nd)(,)\s\d{4}', ' ', page_contents)
 page_contents = re.sub('(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s\d{2}\s\d{4}', ' ', page_contents)
 page_contents = re.sub('(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s\d{2}(,)\s\d{4}', ' ', page_contents)
+print(page_contents)
 
-page_contents
 
 """## Step2.3 :- Removing Punctuations & White Spaces"""
-
 punct = '''!"#$%&'()*+,-/:;<=>?@[\]^_`{|}~©'''
 for ele in page_contents:
     if ele in punct:
@@ -267,21 +231,17 @@ for ele in page_contents:
 page_contents = page_contents.replace('  ', ' ')
 page_contents = page_contents.replace('    ', ' ')
 page_contents = page_contents.strip()
-page_contents
 
 page_contents = page_contents.replace('kindly visit the to discover the benefits of this programme', '')
 page_contents = page_contents.replace('enjoy reading', '')
 page_contents = page_contents.replace('team business standard', '')
 page_contents = page_contents.replace('copyright © 2022', '')
-
 page_contents = page_contents.replace('only the headline and picture of this report may have been reworked by the business standard staff the rest of the content is autogenerated from a syndicated feed. business standard has always strived hard to provide uptodate information and commentary on developments that are of interest to you and have wider political and economic implications for the country and the world. your encouragement and constant feedback on how to improve our offering have only made our resolve and commitment to these ideals stronger. even during these difficult times arising out of covid19 we continue to remain committed to keeping you informed and updated with credible news authoritative views and incisive commentary on topical issues of relevance.we however have a request.as we battle the economic impact of the pandemic we need your support even more so that we can continue to offer you more quality content. our subscrion model has seen an encouraging response from many of you who have subscribed to our online content. more subscrion to our online content can only help us achieve the goals of offering you even better and more relevant content. we believe in free fair and credible joualism. your support through more subscrions can help us practise the joualism to which we are committed.support quality joualism and .digital editor previous story next story copyrights 2022 business standard private ltd. all rights reserved. upgrade to premium services business standard is happy to inform you of the launch of business standard premium services as a premium subscriber you get an across device unfettered access to a range of services which include premium services in partnership with dear guest welcome to the premium services of business standard brought to you courtesy fis', '')
+print(page_contents)
 
-page_contents
 
-"""## Step2.4 :- Removing Stopwords"""
-
-#loading the english language small model of spacy
-
+## Step2.4 :- Removing Stopwords
+# Loading the english language small model of spacy
 en_small = spacy.load('en_core_web_sm')
 en_small.Defaults.stop_words.add("read useful links download app copyright 2022 living media india limited reprint rights")
 sw_spacy_small = en_small.Defaults.stop_words
@@ -293,67 +253,52 @@ print(no_sw_text)
 print("Old length of text: ", len(page_contents))
 print("New length of text: ", len(no_sw_text))
 page_content = no_sw_text
-page_content
+print(page_content)
 
-with open('webpage.txt', 'w') as f:
+with open('webpage_pagecontents.txt', 'w') as f:
   f.write(page_contents)
 
-"""# Step3 :- Word Tokenization
 
+# Step3 :- Word Tokenization
 ## Step3.1 :- Word Tokenization
-"""
-
 punct = "."
 for ele in page_content:
     if ele in punct:
         page_content = page_content.replace(ele, "")
 page_content
 word_tokens = word_tokenize(page_content)
-word_tokens
+print(word_tokens)
+print(len(word_tokens))
 
-len(word_tokens)
 
 """# Step4 :- Word Frequency Count"""
-
 page_contents_word_freq = pd.Series(word_tokens).value_counts()
-
 page_contents_word_freq_dict = {}
-
 keys = page_contents_word_freq.index
-# print('keys =', keys)
-
 values = page_contents_word_freq.values
-# print('values =', values)
-
 page_contents_word_freq_dict.update(zip(keys, values))
-page_contents_word_freq_dict
+print(page_contents_word_freq_dict)
+
 
 """# Step5:- Normalizing the word frequency count(scaling)"""
-
-max(page_contents_word_freq_dict.values())
-
 '''Dividing all the counts of all the words with the maximum count.'''
 page_contents_word_freq_dict = list(page_contents_word_freq_dict.values()) / max(page_contents_word_freq_dict.values())
-page_contents_word_freq_dict
+print(page_contents_word_freq_dict)
 
+# This dictionary will store all the words as key and normalized frequency as value.
 page_contents_word_freq_norm = {}
-
 keys = page_contents_word_freq.index
-
 values = page_contents_word_freq_dict
-
 page_contents_word_freq_norm.update(zip(keys, values))
-
 print(page_contents_word_freq_norm)
 
-"""# Step6 :- Find Important sentences."""
 
+"""# Step6 :- Find Important sentences."""
 sent_token = sent_tokenize(page_contents)
-sent_token
+print(sent_token)
 
 sent_score = []
 count = 0
-
 for i in sent_token:
   split = i.split()
   count_of_words_list = []
@@ -362,26 +307,26 @@ for i in sent_token:
     if key in split:
       count_of_words = split.count(key)
       count = count + count_of_words
-
+        
       if count_of_words > 1:
         mul_val = count_of_words * value         
       else:
-        mul_val = value 
+        mul_val = value       
       
       # print(key + ' | '+ str(count_of_words) + ' | ' + str(mul_val))  
       key_values_list.append(mul_val)
-      count_of_words_list.append(count_of_words) 
-      
+      count_of_words_list.append(count_of_words)       
       score = sum(key_values_list)/sum(count_of_words_list)
       sent_score.append(score)
   print(sum(count_of_words_list))
+print(page_contents_word_freq_norm)
 
-page_contents_word_freq_norm
-
+# This dictionary will store all the sentence tokens as key and its score as value.
 imp_sent_dict = {}
 imp_sent_dict.update(zip(sent_token, sent_score))
-imp_sent_dict
+print(imp_sent_dict)
 
+# This dictionary will store the top n sentences with maximum score value
 summary = {}
 keys = imp_sent_dict.keys()
 values = sorted(imp_sent_dict.values(), reverse = True)
@@ -390,10 +335,10 @@ summary_final = list(summary.keys())[:11]
 summary_final = ' '.join(summary_final)
 summary_final = '\n'.join([title_data, summary_final]) 
 summary_final
-with open('webpage.txt', 'w') as f:
+with open('final_text_summary.txt', 'w') as f:
   f.write(summary_final)
 
-summary_final
+print(summary_final)
 
 pickle.dump(summary_final, open('text_summarizer.pkl', 'wb'))
 
